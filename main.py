@@ -10,13 +10,15 @@ def Main():
     Data = Downloader.DownloadData()
     Engineer = FeatureEngineer(Data, IncludeIndicators=True)
     Data = Engineer.Transform()
-    Environment = TradingEnv(
-        DataFrame=Data,
-        WindowSize=5,
-        InitialBalance=1000,
-        TransactionFee=0.001,
-        SharpeRatioWeight=0.1,
-    )
+        Environment = TradingEnv(
+            DataFrame=Data,
+            WindowSize=5,
+            InitialBalance=1000,
+            TransactionFee=0.001,
+            SharpeRatioWeight=0.1,
+            DrawdownWeight=0.1,
+            VolatilityWeight=0.1,
+        )
     Agent = DqnTradingAgent(Environment)
     Metrics = PerformanceMetrics(Environment)
     Agent.Train(Timesteps=1000)

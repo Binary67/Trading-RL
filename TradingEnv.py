@@ -11,6 +11,8 @@ class TradingEnv(gym.Env):
         InitialBalance: float = 1000.0,
         TransactionFee: float = 0.0,
         SharpeRatioWeight: float = 0.0,
+        DrawdownWeight: float = 0.0,
+        VolatilityWeight: float = 0.0,
     ):
         super().__init__()
         self.DataFrame = DataFrame.reset_index(drop=True)
@@ -22,6 +24,10 @@ class TradingEnv(gym.Env):
         self.SharesHeld = 0
         self.CurrentStep = self.WindowSize
         self.ReturnsHistory = []
+        self.DrawdownWeight = DrawdownWeight
+        self.VolatilityWeight = VolatilityWeight
+        self.MaxPortfolioValue = self.InitialBalance
+        self.PortfolioValueHistory = []
         self.ActionSpace = spaces.Discrete(3)
         self.ObservationSpace = spaces.Box(
             low=-np.inf,
@@ -42,6 +48,8 @@ class TradingEnv(gym.Env):
         self.SharesHeld = 0
         self.CurrentStep = self.WindowSize
         self.ReturnsHistory = []
+        self.MaxPortfolioValue = self.InitialBalance
+        self.PortfolioValueHistory = []
         Observation = self._GetObservation()
         Info = {"balance": self.CurrentBalance, "shares_held": self.SharesHeld}
         return Observation, Info
@@ -82,11 +90,25 @@ class TradingEnv(gym.Env):
         else:
             Return = 0.0
         self.ReturnsHistory.append(Return)
+        self.PortfolioValueHistory.append(NextValue)
+        if NextValue > self.MaxPortfolioValue:
+            self.MaxPortfolioValue = NextValue
+        if self.MaxPortfolioValue != 0:
+            Drawdown = (self.MaxPortfolioValue - NextValue) / self.MaxPortfolioValue
+        else:
+            Drawdown = 0.0
         if len(self.ReturnsHistory) > 1 and np.std(self.ReturnsHistory) != 0:
             SharpeRatio = np.sqrt(252) * np.mean(self.ReturnsHistory) / np.std(self.ReturnsHistory)
         else:
             SharpeRatio = 0.0
-        Reward = ValueChange - TransactionCost + self.SharpeRatioWeight * SharpeRatio
+        Volatility = np.std(self.ReturnsHistory) * np.sqrt(252) if len(self.ReturnsHistory) > 1 else 0.0
+        Reward = (
+            ValueChange
+            - TransactionCost
+            + self.SharpeRatioWeight * SharpeRatio
+            - self.DrawdownWeight * Drawdown
+            - self.VolatilityWeight * Volatility
+        )
         Observation = self._GetObservation()
         Info = {"balance": self.CurrentBalance, "shares_held": self.SharesHeld}
         return Observation, Reward, Terminated, False, Info
