@@ -19,6 +19,8 @@ def Main():
         InitialBalance=1000,
         TransactionFee=0.001,
         SharpeRatioWeight=0.1,
+        DrawdownWeight=0.1,
+        VolatilityWeight=0.05,
     )
     Agent = DqnTradingAgent(
         Environment,
