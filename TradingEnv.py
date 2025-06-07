@@ -35,10 +35,17 @@ class TradingEnv(gym.Env):
         Info = {"balance": self.CurrentBalance, "shares_held": self.SharesHeld}
         return Observation, Info
 
+    # Compatibility methods for libraries expecting lower-case names
+    def reset(self, seed=None, options=None):
+        return self.Reset(seed=seed, options=options)
+
     def Step(self, Action: int):
         Price = float(self.DataFrame.loc[self.CurrentStep, "Close"])
         PortfolioValue = self.CurrentBalance + self.SharesHeld * Price
-        if Action == 1:
+        if Action == 0:
+            # Hold action: do nothing
+            pass
+        elif Action == 1:
             SharesToBuy = int(self.CurrentBalance // Price)
             self.CurrentBalance -= SharesToBuy * Price
             self.SharesHeld += SharesToBuy
@@ -57,3 +64,7 @@ class TradingEnv(gym.Env):
         Observation = self._GetObservation()
         Info = {"balance": self.CurrentBalance, "shares_held": self.SharesHeld}
         return Observation, Reward, Terminated, False, Info
+
+    # Compatibility method for libraries expecting lower-case names
+    def step(self, Action: int):
+        return self.Step(Action)
