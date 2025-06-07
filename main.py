@@ -13,7 +13,6 @@ def Main():
     Data = Downloader.DownloadData()
     Engineer = FeatureEngineer(Data, IncludeIndicators=True, NormalizationMethod="z-score")
     Data = Engineer.Transform()
-    print(Data.head())
     Environment = TradingEnv(
         DataFrame=Data,
         WindowSize=5,
