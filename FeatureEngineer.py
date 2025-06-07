@@ -8,9 +8,10 @@ if not hasattr(np, "NaN"):
 import pandas_ta as ta
 
 class FeatureEngineer:
-    def __init__(self, DataFrame: pd.DataFrame, IncludeIndicators: bool = True):
+    def __init__(self, DataFrame: pd.DataFrame, IncludeIndicators: bool = True, NormalizationMethod: str | None = None):
         self.DataFrame = DataFrame.copy()
         self.IncludeIndicators = IncludeIndicators
+        self.NormalizationMethod = NormalizationMethod
         self.Indicators = {}
         if self.IncludeIndicators:
             # Register default indicators
@@ -53,6 +54,21 @@ class FeatureEngineer:
             return BbDf
         return CalculateBollinger
 
+    def Normalize(self, Method: str = "z-score"):
+        NumericColumns = self.DataFrame.select_dtypes(include=[np.number]).columns
+        if Method == "z-score":
+            self.DataFrame[NumericColumns] = (
+                self.DataFrame[NumericColumns] - self.DataFrame[NumericColumns].mean()
+            ) / self.DataFrame[NumericColumns].std(ddof=0)
+        elif Method == "min-max":
+            self.DataFrame[NumericColumns] = (
+                self.DataFrame[NumericColumns] - self.DataFrame[NumericColumns].min()
+            ) / (
+                self.DataFrame[NumericColumns].max() - self.DataFrame[NumericColumns].min()
+            )
+        else:
+            raise ValueError("Method must be 'z-score' or 'min-max'")
+
     def Transform(self):
         if self.IncludeIndicators:
             for Name, Function in self.Indicators.items():
@@ -62,5 +78,7 @@ class FeatureEngineer:
                         self.DataFrame[f"{Column}"] = Result[Column]
                 else:
                     self.DataFrame[Name] = Result
+        if self.NormalizationMethod:
+            self.Normalize(self.NormalizationMethod)
         self.DataFrame.dropna(inplace=True)
         return self.DataFrame
