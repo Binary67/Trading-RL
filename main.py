@@ -17,7 +17,13 @@ def Main():
         TransactionFee=0.001,
         SharpeRatioWeight=0.1,
     )
-    Agent = DqnTradingAgent(Environment)
+    Agent = DqnTradingAgent(
+        Environment,
+        LearningRate=1e-3,
+        BufferSize=50000,
+        BatchSize=64,
+        Gamma=0.95,
+    )
     Metrics = PerformanceMetrics(Environment)
     Agent.Train(Timesteps=1000)
     Observation, Info = Environment.Reset()
