@@ -4,6 +4,9 @@ from DqnTradingAgent import DqnTradingAgent
 from PerformanceMetrics import PerformanceMetrics
 from FeatureEngineer import FeatureEngineer
 
+import sys
+sys.dont_write_bytecode = True
+
 
 def Main():
     Downloader = YFinanceDownloader("AAPL", "2020-01-01", "2023-12-31", "1d")
