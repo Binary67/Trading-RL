@@ -11,7 +11,7 @@ sys.dont_write_bytecode = True
 def Main():
     Downloader = YFinanceDownloader("AAPL", "2020-01-01", "2023-12-31", "1d")
     Data = Downloader.DownloadData()
-    Engineer = FeatureEngineer(Data, IncludeIndicators=True)
+    Engineer = FeatureEngineer(Data, IncludeIndicators=True, NormalizationMethod="z-score")
     Data = Engineer.Transform()
     print(Data.head())
     Environment = TradingEnv(
