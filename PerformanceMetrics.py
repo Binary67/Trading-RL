@@ -28,7 +28,7 @@ class PerformanceMetrics:
         plt.xlabel("Step")
         plt.ylabel("Equity")
         plt.tight_layout()
-        plt.show()
+        plt.savefig("equity_curve.png")
         print(f"Cumulative Return: {CumulativeReturn:.2%}")
         print(f"Sharpe Ratio: {SharpeRatio:.2f}")
         print(f"Max Drawdown: {MaxDrawdown:.2%}")
