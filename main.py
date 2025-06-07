@@ -19,6 +19,8 @@ def Main():
         WindowSize=5,
         InitialBalance=1000,
         TransactionFee=0.001,
+        Slippage=0.0005,
+        VariableFeeCoefficient=0.05,
         SharpeRatioWeight=0.1,
         DrawdownWeight=0.1,
         VolatilityWeight=0.05,
