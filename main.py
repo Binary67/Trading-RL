@@ -13,6 +13,7 @@ def Main():
     Data = Downloader.DownloadData()
     Engineer = FeatureEngineer(Data, IncludeIndicators=True)
     Data = Engineer.Transform()
+    print(Data.head())
     Environment = TradingEnv(
         DataFrame=Data,
         WindowSize=5,
