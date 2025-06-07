@@ -115,7 +115,6 @@ class TradingEnv(gym.Env):
             Drawdown = 0.0
         Reward = (
             ValueChange
-            - TransactionCost
             + self.SharpeRatioWeight * SharpeRatio
             - self.DrawdownWeight * Drawdown
             - self.VolatilityWeight * Volatility
