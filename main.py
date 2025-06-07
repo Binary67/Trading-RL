@@ -7,7 +7,13 @@ from PerformanceMetrics import PerformanceMetrics
 def Main():
     Downloader = YFinanceDownloader("AAPL", "2020-01-01", "2023-12-31", "1d")
     Data = Downloader.DownloadData()
-    Environment = TradingEnv(DataFrame=Data, WindowSize=5, InitialBalance=1000)
+    Environment = TradingEnv(
+        DataFrame=Data,
+        WindowSize=5,
+        InitialBalance=1000,
+        TransactionFee=0.001,
+        SharpeRatioWeight=0.1,
+    )
     Agent = DqnTradingAgent(Environment)
     Metrics = PerformanceMetrics(Environment)
     Agent.Train(Timesteps=1000)
