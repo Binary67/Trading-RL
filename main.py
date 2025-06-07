@@ -3,7 +3,7 @@ from TradingEnv import TradingEnv
 
 
 def Main():
-    Downloader = YFinanceDownloader("AAPL", "2023-01-01", "2023-01-15", "1d")
+    Downloader = YFinanceDownloader("AAPL", "2020-01-01", "2023-12-31", "1d")
     Data = Downloader.DownloadData()
     Environment = TradingEnv(DataFrame=Data, WindowSize=5, InitialBalance=1000)
     Observation, Info = Environment.Reset()
